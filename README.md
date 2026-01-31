@@ -1,57 +1,119 @@
-# RSA Man-in-the-Middle Attack Demo
+🔐 RSA Man-in-the-Middle Attack Demo
 
-This project demonstrates a **Man-in-the-Middle (MitM) attack** on a chat application secured by a weakened implementation of the **RSA encryption algorithm**.
+This project demonstrates how a Man-in-the-Middle (MitM) attack can successfully break a chat system that uses a weakened implementation of RSA encryption.
+It highlights why modern cryptographic best practices are essential for secure communication.
 
-## Project Overview
+🚀 Project Overview
 
-The application consists of three main components:
-1.  **Chat Clients (`ChatClient`):** Two clients (Alice and Bob) that attempt to communicate securely using RSA public-key encryption.
-2.  **Attacker Server (`ManInMiddle`):** A server that sits between the clients, intercepting their public key exchange.
+The system consists of three core components:
 
-## How the Attack Works
+1. Chat Clients (Alice & Bob)
 
-1.  **Weak Key Generation:** The clients use small prime numbers to generate their RSA keys.
-2.  **Key Interception:** When a client sends its Public Key `(e, n)` to the other party, the `ManInMiddle` server intercepts it.
-3.  **Factorization Attack:** The attacker uses **Fermat's Factorization Method** to factor the modulus `n` back into its primes `p` and `q`.
-4.  **Private Key Derivation:** With `p` and `q` recovered, the attacker calculates the Private Key `d`.
-5.  **Decryption:** The attacker can now decrypt any message sent with the intercepted Public Key.
+Implemented in Java (ChatClient3.java and ChatClient4.java)
 
-## Usage
+Exchange messages encrypted using RSA public keys
 
-### Prerequisites
-- Java Development Kit (JDK) 8 or higher.
+Communicate assuming a secure channel
 
-### Running the Demo
+2. Man-in-the-Middle Attacker (ManInMiddle.java)
 
-1.  **Compile the code:**
-    ```bash
-    javac *.java
-    ```
+Intercepts public keys exchanged between clients
 
-2.  **Start the Attacker Server:**
-    ```bash
-    java ManInMiddle
-    ```
+Performs RSA modulus factorization
 
-3.  **Start Client 1:**
-    ```bash
-    java ChatClient3
-    ```
+Decrypts intercepted messages in real time
 
-4.  **Start Client 2:**
-    ```bash
-    java ChatClient4
-    ```
+3. Weak RSA Implementation
 
-5.  **Chat:** Type messages in the client windows. Watch the `ManInMiddle` console to see the messages being decrypted in real-time.
+Uses small prime numbers, making RSA vulnerable
 
-## Educational Purpose
+Enables the attacker to factor the modulus n efficiently
 
-**WARNING:** This code is for **educational purposes only**. It demonstrates why:
-- Using small key sizes in RSA is insecure.
-- Authenticating public keys (e.g., via Certificates) is crucial to prevent MitM attacks.
-- Padding schemes (like OAEP) are necessary for RSA security.
+🛑 How the Attack Works
+Step-by-step Breakdown
 
-## Author
+Weak RSA Key Generation
+Clients generate RSA keys using small primes — making factorization trivial.
 
-[Your Name]
+Interception of Public Keys
+The attacker sits between the clients during key exchange and captures (e, n).
+
+Fermat’s Factorization Attack
+Using Fermat’s method, the attacker computes:
+
+n = p × q
+
+
+and recovers p and q.
+
+Private Key Reconstruction
+With p and q, the attacker calculates:
+
+φ(n) = (p−1)(q−1)
+d = e^{-1} mod φ(n)
+
+
+Message Decryption
+The attacker now has the private key and decrypts all messages between the clients.
+
+🧪 Running the Demo
+Prerequisites
+
+Java Development Kit (JDK 8+)
+
+1️⃣ Compile the project
+javac *.java
+
+2️⃣ Start the Man-In-The-Middle server
+java ManInMiddle
+
+3️⃣ Start Client 1
+java ChatClient3
+
+4️⃣ Start Client 2
+java ChatClient4
+
+5️⃣ Observe the attack
+
+Chat normally between clients
+
+Watch the attacker's terminal to see:
+
+intercepted keys
+
+factorization
+
+decrypted messages
+
+🎓 Educational Purpose
+
+This project highlights why modern RSA implementations must include:
+
+✔ Large prime numbers (2048+ bits)
+
+Prevents feasible factorization.
+
+✔ Authentic public key verification
+
+Digital certificates prevent MitM interception.
+
+✔ Secure padding schemes (OAEP)
+
+Mitigates deterministic RSA vulnerabilities.
+
+⚠️ Disclaimer
+
+This project is strictly for:
+
+Educational use
+
+Cryptography learning
+
+Security demonstrations
+
+Do NOT use this code for any malicious activities.
+
+👩‍💻 Author
+
+Chinmayi M Bhise
+B.Tech CSE (Cybersecurity) | Security Researcher | Developer
