@@ -1,119 +1,111 @@
-🔐 RSA Man-in-the-Middle Attack Demo
+🔐 RSA Man-in-the-Middle Attack
 
-This project demonstrates how a Man-in-the-Middle (MitM) attack can successfully break a chat system that uses a weakened implementation of RSA encryption.
-It highlights why modern cryptographic best practices are essential for secure communication.
+A practical demonstration of how a Man-in-the-Middle (MitM) attack can break communication secured by a weak RSA implementation.
+This project showcases key interception, modulus factorization, private key reconstruction, and live message decryption — all in real time.
 
-🚀 Project Overview
+✨ Features
 
-The system consists of three core components:
+🔑 RSA Key Generation (Weak Primes)
 
-1. Chat Clients (Alice & Bob)
+📡 Intercepted Public Key Exchange
 
-Implemented in Java (ChatClient3.java and ChatClient4.java)
+🧮 Fermat’s Factorization Attack
 
-Exchange messages encrypted using RSA public keys
+🔓 Private Key Recovery From (e, n)
 
-Communicate assuming a secure channel
+🗨️ Live Decryption of Messages Between Clients
 
-2. Man-in-the-Middle Attacker (ManInMiddle.java)
-
-Intercepts public keys exchanged between clients
-
-Performs RSA modulus factorization
-
-Decrypts intercepted messages in real time
-
-3. Weak RSA Implementation
-
-Uses small prime numbers, making RSA vulnerable
-
-Enables the attacker to factor the modulus n efficiently
-
-🛑 How the Attack Works
-Step-by-step Breakdown
-
-Weak RSA Key Generation
-Clients generate RSA keys using small primes — making factorization trivial.
-
-Interception of Public Keys
-The attacker sits between the clients during key exchange and captures (e, n).
-
-Fermat’s Factorization Attack
-Using Fermat’s method, the attacker computes:
-
-n = p × q
+🖥️ Terminal-based Chat Simulation (Alice ↔ Bob)
 
 
-and recovers p and q.
+🔍 Technical Flow of the Attack
+1. Vulnerable RSA Key Generation
 
-Private Key Reconstruction
-With p and q, the attacker calculates:
+The clients generate small prime numbers for RSA.
+Because n = p × q is small, factorization is computationally easy.
 
-φ(n) = (p−1)(q−1)
-d = e^{-1} mod φ(n)
+2. Public Key Interception
+
+When Alice sends Bob her public key, the attacker captures:
+
+    PublicKey_A = (eA, nA)
+
+3. Fermat’s Factorization Method
+
+The attacker factors nA by exploiting the fact that p and q are close.
+
+    n = p × q
+    n = a² − b²
+    a = ceil(√n)
+
+4. Private Key Reconstruction
+
+Once p and q are recovered:
+
+    φ(n) = (p−1)(q−1)
+    d = e⁻¹ mod φ(n)
+
+5. Message Decryption
+
+All intercepted ciphertexts:
+
+    C = M^e mod n
 
 
-Message Decryption
-The attacker now has the private key and decrypts all messages between the clients.
+are decrypted to plaintext:
+
+    M = C^d mod n
 
 🧪 Running the Demo
 Prerequisites
 
-Java Development Kit (JDK 8+)
+Java JDK 8 or above
 
-1️⃣ Compile the project
+Compile the source
 javac *.java
 
-2️⃣ Start the Man-In-The-Middle server
+Start the MITM server
 java ManInMiddle
 
-3️⃣ Start Client 1
+Start Client 1 (Alice)
 java ChatClient3
 
-4️⃣ Start Client 2
+Start Client 2 (Bob)
 java ChatClient4
 
-5️⃣ Observe the attack
+Interact
 
-Chat normally between clients
+Type messages from both clients
 
-Watch the attacker's terminal to see:
+Observe decrypted messages in the MITM console
 
-intercepted keys
+Watch the entire RSA exploit process happen in live view
 
-factorization
+🎓 What You Learn From This Project
+🔸 Why RSA with small primes is dangerous
 
-decrypted messages
+Small moduli can be factored in seconds.
 
-🎓 Educational Purpose
+🔸 Why public key authentication matters
 
-This project highlights why modern RSA implementations must include:
+Without proper certificates, MITM becomes trivial.
 
-✔ Large prime numbers (2048+ bits)
+🔸 Why RSA must be padded
 
-Prevents feasible factorization.
+Raw RSA is deterministic and insecure without OAEP.
 
-✔ Authentic public key verification
+🔸 How MITM attacks break naive key exchanges
 
-Digital certificates prevent MitM interception.
-
-✔ Secure padding schemes (OAEP)
-
-Mitigates deterministic RSA vulnerabilities.
+Trusting unauthenticated public keys = disaster.
 
 ⚠️ Disclaimer
 
-This project is strictly for:
-
-Educational use
-
-Cryptography learning
-
-Security demonstrations
-
-Do NOT use this code for any malicious activities.
+This project is strictly for educational and research purposes.
+Do not use this code for any unauthorized or malicious activity.
+The goal is to understand security — not violate it.
 
 👩‍💻 Author
 
 Chinmayi M Bhise
-B.Tech CSE (Cybersecurity) | Security Researcher | Developer
+B.Tech CSE (Cybersecurity) | Security Researcher | Offensive Security Learner
+Passionate about cryptography, vulnerability research, and secure system design.
