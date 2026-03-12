@@ -51,7 +51,6 @@ class ChatClient3 {
             String message = in.readLine();
             System.out.println("SERVER: " + message);
 
-            // Start chat
             while (true) {
                 try {
                     System.out.print("ME: ");
