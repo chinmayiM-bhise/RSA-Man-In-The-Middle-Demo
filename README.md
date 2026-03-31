@@ -117,4 +117,7 @@ It should **not be used for malicious activities**.
 
 Chinmayi
 B.Tech – Computer Science (Cybersecurity)
-Interest Areas: Ethical Hacking, Cryptography, and Security Research
+Interest Areas: 
+    Ethical Hacking
+    Cryptography
+    Security Research
