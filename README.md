@@ -1,111 +1,120 @@
-🔐 RSA Man-in-the-Middle Attack
+# RSA Man-in-the-Middle Attack Demonstration
 
-A practical demonstration of how a Man-in-the-Middle (MitM) attack can break communication secured by a weak RSA implementation.
-This project showcases key interception, modulus factorization, private key reconstruction, and live message decryption — all in real time.
+## Overview
 
-✨ Features
+This project demonstrates a **Man-in-the-Middle (MitM) attack** on a chat communication system that uses a **weak implementation of the RSA encryption algorithm**. The objective is to illustrate how improper key management and weak cryptographic parameters can allow an attacker to intercept and decrypt supposedly secure communications.
 
-🔑 RSA Key Generation (Weak Primes)
+The system simulates two users communicating over a network while an attacker intercepts the key exchange and compromises the encryption process.
 
-📡 Intercepted Public Key Exchange
+---
 
-🧮 Fermat’s Factorization Attack
+## Project Architecture
 
-🔓 Private Key Recovery From (e, n)
+The application consists of three primary components:
 
-🗨️ Live Decryption of Messages Between Clients
+### 1. Chat Clients (`ChatClient3` and `ChatClient4`)
 
-🖥️ Terminal-based Chat Simulation (Alice ↔ Bob)
+Two clients simulate users communicating securely using RSA public-key encryption.
 
+### 2. Attacker Server (`ManInMiddle`)
 
-🔍 Technical Flow of the Attack
-1. Vulnerable RSA Key Generation
+A malicious intermediary server that intercepts the public key exchange between the two clients.
 
-The clients generate small prime numbers for RSA.
-Because n = p × q is small, factorization is computationally easy.
+### 3. RSA Utility Module (`RSAUtils`)
 
-2. Public Key Interception
+A helper class responsible for generating RSA keys and performing encryption and decryption operations.
 
-When Alice sends Bob her public key, the attacker captures:
+---
 
-    PublicKey_A = (eA, nA)
+## Attack Methodology
 
-3. Fermat’s Factorization Method
+The attack demonstrates how weak RSA implementations can be compromised through the following steps:
 
-The attacker factors nA by exploiting the fact that p and q are close.
+1. **Weak Key Generation**
 
-    n = p × q
-    n = a² − b²
-    a = ceil(√n)
+   * The clients generate RSA keys using **small prime numbers**, making the modulus `n` vulnerable to factorization.
 
-4. Private Key Reconstruction
+2. **Public Key Interception**
 
-Once p and q are recovered:
+   * During communication setup, the attacker intercepts the public key `(e, n)` transmitted between the clients.
 
-    φ(n) = (p−1)(q−1)
-    d = e⁻¹ mod φ(n)
+3. **Factorization of RSA Modulus**
 
-5. Message Decryption
+   * The attacker applies **Fermat's Factorization Method** to break the modulus `n` into its prime factors `p` and `q`.
 
-All intercepted ciphertexts:
+4. **Private Key Reconstruction**
 
-    C = M^e mod n
+   * Using the recovered values of `p` and `q`, the attacker computes:
+   * Euler’s Totient: `φ(n)`
+   * Private key exponent: `d`
 
+5. **Message Decryption**
 
-are decrypted to plaintext:
+   * With the private key derived, the attacker can decrypt intercepted ciphertext messages in real time.
 
-    M = C^d mod n
+---
 
-🧪 Running the Demo
-Prerequisites
+## Requirements
 
-Java JDK 8 or above
+* **Java Development Kit (JDK) 8 or later**
+* Basic understanding of RSA cryptography and networking
 
-Compile the source
+---
+
+## Running the Demonstration
+
+### Step 1: Compile the Source Code
+
+```bash
 javac *.java
+```
 
-Start the MITM server
+### Step 2: Start the Attacker Server
+
+```bash
 java ManInMiddle
+```
 
-Start Client 1 (Alice)
+### Step 3: Launch Client 1
+
+```bash
 java ChatClient3
+```
 
-Start Client 2 (Bob)
+### Step 4: Launch Client 2
+
+```bash
 java ChatClient4
+```
 
-Interact
+### Step 5: Observe the Attack
 
-Type messages from both clients
+Send messages between the two clients.
+The **ManInMiddle server console** will display intercepted messages and their decrypted contents.
 
-Observe decrypted messages in the MITM console
+---
 
-Watch the entire RSA exploit process happen in live view
+## Key Learning Outcomes
 
-🎓 What You Learn From This Project
-🔸 Why RSA with small primes is dangerous
+This project highlights important cryptographic security principles:
 
-Small moduli can be factored in seconds.
+* The risks of **using small RSA key sizes**
+* The importance of **secure public key distribution**
+* The necessity of **digital certificates and PKI**
+* The role of **secure padding schemes (e.g., OAEP)**
+* The vulnerability of cryptographic systems to **Man-in-the-Middle attacks**
 
-🔸 Why public key authentication matters
+---
 
-Without proper certificates, MITM becomes trivial.
+## Disclaimer
 
-🔸 Why RSA must be padded
+This project is created strictly for **educational and research purposes** to demonstrate cryptographic vulnerabilities and attack techniques.
+It should **not be used for malicious activities**.
 
-Raw RSA is deterministic and insecure without OAEP.
+---
 
-🔸 How MITM attacks break naive key exchanges
+## Author
 
-Trusting unauthenticated public keys = disaster.
-
-⚠️ Disclaimer
-
-This project is strictly for educational and research purposes.
-Do not use this code for any unauthorized or malicious activity.
-The goal is to understand security — not violate it.
-
-👩‍💻 Author
-
-Chinmayi M Bhise
-B.Tech CSE (Cybersecurity) | Security Researcher | Offensive Security Learner
-Passionate about cryptography, vulnerability research, and secure system design.
+Chinmayi
+B.Tech – Computer Science (Cybersecurity)
+Interest Areas: Ethical Hacking, Cryptography, and Security Research

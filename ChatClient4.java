@@ -11,30 +11,16 @@ class ChatClient4 {
 
             Scanner scanner = new Scanner(System.in);
 
-            int p2 = 59;
-            int q2 = 67;
-            int e2 = 19;
+            // Generate weak keys dynamically
+            // For demonstration, using a small range for primes
+            RSAUtils.RSAKeyPair clientKeyPair = RSAUtils.generateWeakKeyPair(50, 100, 19); // Using 19 for e, similar to original
 
-            int phi_n2 = (p2 - 1) * (q2 - 1);
-            int n2 = p2 * q2;
-            System.out.println("Calculated public key locally: (" + e2 + "," + n2 + ")");
-
-            int d2 = 0;
-            for (int d = 1; d > 0; d++) {
-                if (((e2 * d) % phi_n2) == 1) {
-                    d2 = d;
-                    System.out.println(d2 + " is the private key\n");
-                    break;
-                }
-            }
-
-            BigInteger keypu = BigInteger.valueOf(e2);
-            BigInteger keypr = BigInteger.valueOf(d2);
-            BigInteger n = BigInteger.valueOf(n2);
-
+            System.out.println("Calculated public key locally: (" + clientKeyPair.publicKeyE() + "," + clientKeyPair.modulusN() + ")");
+            System.out.println(clientKeyPair.privateKeyD() + " is the private key\n");
+            
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(n2);
-            out.println(e2);
+            out.println(clientKeyPair.modulusN());
+            out.println(clientKeyPair.publicKeyE());
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String cStr3 = in.readLine();
@@ -55,12 +41,12 @@ class ChatClient4 {
             while (true) {
                 try {
                     String encryptedMessage = in.readLine();
-                    String decryptedMessage = decryptMessage(encryptedMessage, keypr, n);
+                    String decryptedMessage = RSAUtils.decryptMessage(encryptedMessage, clientKeyPair.privateKeyD(), clientKeyPair.modulusN());
                     System.out.println("CLIENT 1: " + decryptedMessage);
 
                     System.out.print("ME: ");
                     String kbstr = scanner.nextLine();
-                    String encryptedResponse = encryptMessage(kbstr, client1PublicKey, client1Modulus);
+                    String encryptedResponse = RSAUtils.encryptMessage(kbstr, client1PublicKey, client1Modulus);
                     out.println(encryptedResponse);
                 } catch (IOException e) {
                     System.out.println("Connection lost: " + e.getMessage());
@@ -70,27 +56,5 @@ class ChatClient4 {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static String encryptMessage(String message, BigInteger e, BigInteger n) {
-        StringBuilder encryptedMessage = new StringBuilder();
-        for (int i = 0; i < message.length(); i++) {
-            int charValue = (int) message.charAt(i);
-            BigInteger ch = BigInteger.valueOf(charValue);
-            BigInteger encryptedCh = ch.modPow(e, n);
-            encryptedMessage.append(encryptedCh).append(" ");
-        }
-        return encryptedMessage.toString().trim();
-    }
-
-    private static String decryptMessage(String encryptedMessage, BigInteger d, BigInteger n) {
-        StringBuilder decryptedMessage = new StringBuilder();
-        String[] encryptedValues = encryptedMessage.split(" ");
-        for (String cipher : encryptedValues) {
-            BigInteger encryptedCh = new BigInteger(cipher);
-            BigInteger decryptedCh = encryptedCh.modPow(d, n);
-            decryptedMessage.append((char) decryptedCh.intValue());
-        }
-        return decryptedMessage.toString();
     }
 }

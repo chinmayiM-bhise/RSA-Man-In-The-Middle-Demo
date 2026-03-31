@@ -66,17 +66,27 @@ class ManInMiddle {
                 try {
                     if (in1.ready()) {
                         String encryptedMessage1 = in1.readLine();
-                        String decryptedMessage1 = decryptMessage(encryptedMessage1, d1, n1BigInt);
+                        String decryptedMessage1 = RSAUtils.decryptMessage(encryptedMessage1, d1, n1BigInt);
                         System.out.println("Decrypted message from client 1: " + decryptedMessage1);
-                        String encryptedMessageForClient2 = encryptMessage(decryptedMessage1, e2BigInt, n2BigInt);
+                        // Tamper with the message
+                        String tamperedMessage1 = decryptedMessage1.replace("secret", "compromised");
+                        if (!tamperedMessage1.equals(decryptedMessage1)) {
+                            System.out.println("!!! Tampered message from client 1: " + tamperedMessage1);
+                        }
+                        String encryptedMessageForClient2 = RSAUtils.encryptMessage(tamperedMessage1, e2BigInt, n2BigInt);
                         out2.println(encryptedMessageForClient2);
                     }
                     
                     if (in2.ready()) {
                         String encryptedMessage2 = in2.readLine();
-                        String decryptedMessage2 = decryptMessage(encryptedMessage2, d2, n2BigInt);
+                        String decryptedMessage2 = RSAUtils.decryptMessage(encryptedMessage2, d2, n2BigInt);
                         System.out.println("Decrypted message from client 2: " + decryptedMessage2);
-                        String encryptedMessageForClient1 = encryptMessage(decryptedMessage2, e1BigInt, n1BigInt);
+                        // Tamper with the message
+                        String tamperedMessage2 = decryptedMessage2.replace("secret", "compromised");
+                        if (!tamperedMessage2.equals(decryptedMessage2)) {
+                            System.out.println("!!! Tampered message from client 2: " + tamperedMessage2);
+                        }
+                        String encryptedMessageForClient1 = RSAUtils.encryptMessage(tamperedMessage2, e1BigInt, n1BigInt);
                         out1.println(encryptedMessageForClient1);
                     }
                 } catch (IOException e) {
@@ -111,27 +121,5 @@ class ManInMiddle {
 
         BigInteger phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
         return e.modInverse(phi);
-    }
-
-    private static String decryptMessage(String encryptedMessage, BigInteger d, BigInteger n) {
-        StringBuilder decryptedMessage = new StringBuilder();
-        String[] encryptedValues = encryptedMessage.split(" ");
-        for (String cipher : encryptedValues) {
-            BigInteger encryptedCh = new BigInteger(cipher);
-            BigInteger decryptedCh = encryptedCh.modPow(d, n);
-            decryptedMessage.append((char) decryptedCh.intValue());
-        }
-        return decryptedMessage.toString();
-    }
-
-    private static String encryptMessage(String message, BigInteger e, BigInteger n) {
-        StringBuilder encryptedMessage = new StringBuilder();
-        for (int i = 0; i < message.length(); i++) {
-            int charValue = (int) message.charAt(i);
-            BigInteger ch = BigInteger.valueOf(charValue);
-            BigInteger encryptedCh = ch.modPow(e, n);
-            encryptedMessage.append(encryptedCh).append(" ");
-        }
-        return encryptedMessage.toString().trim();
     }
 }
